@@ -1,0 +1,3131 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "v1.0.0",
+    "title" : "cart-service-api"
+  },
+  "host" : "localhost:8080",
+  "basePath" : "/v1",
+  "tags" : [ {
+    "name" : "cart"
+  }, {
+    "name" : "configuration"
+  }, {
+    "name" : "fulfillment"
+  }, {
+    "name" : "me"
+  }, {
+    "name" : "order"
+  } ],
+  "schemes" : [ "http" ],
+  "paths" : {
+    "/carts" : {
+      "get" : {
+        "tags" : [ "cart" ],
+        "summary" : "Get list of carts",
+        "description" : "Returns a list of carts.",
+        "operationId" : "findCarts",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "withPcSnapshot",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of carts",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Cart"
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "cart" ],
+        "summary" : "Create cart",
+        "description" : "Creates a cart.",
+        "operationId" : "createCart",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "withPcSnapshot",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Cart"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{cartId}/locationAvailability" : {
+      "post" : {
+        "tags" : [ "cart" ],
+        "summary" : "Check location availability.",
+        "description" : "Check availability of cart items on given location.",
+        "operationId" : "locationAvailability",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "withPcSnapshot",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "cartId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/LocationAvailability"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/LocationAndCartItems"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/carts/{cartId}/updatePrices" : {
+      "post" : {
+        "tags" : [ "cart" ],
+        "summary" : "Updates prices and sets price date",
+        "description" : "Updates prices and sets price date. Order must be created soon after this call since the pricesUpdatedAt timestamp serves as the basis for final pricing. Client should compare the total price before and after this call to warn the customer about possible price change.",
+        "operationId" : "previewCart",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "withPcSnapshot",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "cartId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{cartId}/items/{itemId}/documents/{documentId}" : {
+      "delete" : {
+        "tags" : [ "cart" ],
+        "summary" : "Remove a single document from item",
+        "description" : "Removes a single document from item.",
+        "operationId" : "removeCartItemDocument",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "cartId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "itemId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "documentId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{id}/abandon" : {
+      "put" : {
+        "tags" : [ "cart" ],
+        "summary" : "Abandon cart",
+        "description" : "Abandon cart",
+        "operationId" : "abandonCart",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{cartId}/items/{itemId}/modifiers" : {
+      "put" : {
+        "tags" : [ "cart" ],
+        "summary" : "Update item modifiers",
+        "description" : "Update item modifiers.",
+        "operationId" : "addCartItemModifier",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "withPcSnapshot",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "cartId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "itemId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/CartItemProductModifier"
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{cartId}/items/{itemId}/bundle_selection" : {
+      "put" : {
+        "tags" : [ "cart" ],
+        "summary" : "Update item bundle selection",
+        "description" : "Update item bundle selection.",
+        "operationId" : "addCartItemBundleSelection",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "withPcSnapshot",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "cartId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "itemId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/Bundle"
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{id}" : {
+      "get" : {
+        "tags" : [ "cart" ],
+        "summary" : "Get cart by ID",
+        "description" : "Returns a cart by ID.",
+        "operationId" : "findCartById",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "withPcSnapshot",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        }, {
+          "name" : "withDocumentData",
+          "in" : "query",
+          "description" : "Include base64 document data in response, false by default",
+          "required" : false,
+          "type" : "boolean",
+          "default" : false
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "cart" ],
+        "summary" : "Update a cart",
+        "description" : "Updates a cart.",
+        "operationId" : "updateCart",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Cart"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      },
+      "patch" : {
+        "tags" : [ "cart" ],
+        "summary" : "Patch a cart",
+        "description" : "Patches a cart. Attributes available for patching: customerNotice",
+        "operationId" : "patchCart",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Cart"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{cartId}/items" : {
+      "post" : {
+        "tags" : [ "cart" ],
+        "summary" : "Add item to cart",
+        "description" : "Add item to cart.",
+        "operationId" : "addCartItem",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "withPcSnapshot",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "cartId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/CartItem"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{cartId}/changeLocation" : {
+      "post" : {
+        "tags" : [ "cart" ],
+        "summary" : "Change cart location.",
+        "description" : "Change cart location. Recalculate prices for new location. Items with no stock on new location are removed.",
+        "operationId" : "changeLocation",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "withPcSnapshot",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "cartId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/LocationChange"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{cartId}/items/{itemId}/benefit" : {
+      "post" : {
+        "tags" : [ "cart" ],
+        "summary" : "Add benefit to item",
+        "description" : "Add benefit to item.",
+        "operationId" : "addBenefitToCartItem",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "cartId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "itemId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Benefit"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "cart" ],
+        "summary" : "Remove benefit from item",
+        "description" : "Remove benefit from item.",
+        "operationId" : "addBenefitToCartItem",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "cartId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "itemId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{cartId}/items/{itemId}/metadata" : {
+      "put" : {
+        "tags" : [ "cart" ],
+        "summary" : "Update item metadata",
+        "description" : "Update item metadata.",
+        "operationId" : "updateItemMetadata",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "cartId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "itemId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/KeyValue"
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{cartId}/items/{itemId}" : {
+      "delete" : {
+        "tags" : [ "cart" ],
+        "summary" : "Remove cart item from cart",
+        "description" : "Remove cart item from cart.",
+        "operationId" : "removeCartItem",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "withPcSnapshot",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "cartId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "itemId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{cartId}/items/{itemId}/swap" : {
+      "post" : {
+        "tags" : [ "cart" ],
+        "summary" : "Swap cart item",
+        "description" : "Swap cart item.",
+        "operationId" : "swapCartItem",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "withPcSnapshot",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "cartId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "itemId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/CartItem"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{cartId}/items/{itemId}/pricing" : {
+      "post" : {
+        "tags" : [ "cart" ],
+        "summary" : "Change item pricing scheme",
+        "description" : "Change item pricing scheme",
+        "operationId" : "setPricingForItem",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "cartId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "itemId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PricingUpdate"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      }
+    },
+    "/carts/{cartId}/items/{itemId}/documents" : {
+      "post" : {
+        "tags" : [ "cart" ],
+        "summary" : "Add document to item",
+        "description" : "Add document to cart item.",
+        "operationId" : "addCartItemDocument",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "cartId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "itemId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/CartItemDocument"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "cart" ],
+        "summary" : "Remove all documents from item",
+        "description" : "Removes all documents from item.",
+        "operationId" : "removeAllDocumentsFromItem",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "cartId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "itemId",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A cart",
+            "schema" : {
+              "$ref" : "#/definitions/Cart"
+            }
+          }
+        }
+      }
+    },
+    "/configuration" : {
+      "get" : {
+        "tags" : [ "configuration" ],
+        "summary" : "Get configuration values",
+        "description" : "Returns the configuration values.",
+        "operationId" : "test",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Configuration value",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fulfillments/{id}" : {
+      "get" : {
+        "tags" : [ "fulfillment" ],
+        "summary" : "Get fulfillmet by ID",
+        "description" : "Returns a fulfillment by ID.",
+        "operationId" : "findFulfillmentById",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A fulfillment",
+            "schema" : {
+              "$ref" : "#/definitions/Order"
+            }
+          }
+        }
+      }
+    },
+    "/fulfillments/{id}/accept" : {
+      "post" : {
+        "tags" : [ "fulfillment" ],
+        "summary" : "Accept a fulfillment",
+        "description" : "Accepts a fulfillment.",
+        "operationId" : "acceptFulfillment",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A fulfillment",
+            "schema" : {
+              "$ref" : "#/definitions/OrderItemFulfillment"
+            }
+          }
+        }
+      }
+    },
+    "/fulfillments/{id}/complete" : {
+      "post" : {
+        "tags" : [ "fulfillment" ],
+        "summary" : "Complete a fulfillment",
+        "description" : "Complete a fulfillment.",
+        "operationId" : "completeFulfillment",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A fulfillment",
+            "schema" : {
+              "$ref" : "#/definitions/OrderItemFulfillment"
+            }
+          }
+        }
+      }
+    },
+    "/fulfillments/{id}/cancel" : {
+      "post" : {
+        "tags" : [ "fulfillment" ],
+        "summary" : "Cancel a fulfillment",
+        "description" : "Cancel a fulfillment.",
+        "operationId" : "cancelFulfillment",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A fulfillment",
+            "schema" : {
+              "$ref" : "#/definitions/OrderItemFulfillment"
+            }
+          }
+        }
+      }
+    },
+    "/me" : {
+      "get" : {
+        "tags" : [ "me" ],
+        "summary" : "Get login info",
+        "description" : "Returns your login info.",
+        "operationId" : "me",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "Login info",
+            "schema" : {
+              "$ref" : "#/definitions/Me"
+            }
+          }
+        }
+      }
+    },
+    "/orders" : {
+      "get" : {
+        "tags" : [ "order" ],
+        "summary" : "Get list of orders",
+        "description" : "Returns a list of orders.",
+        "operationId" : "findOrders",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "withPcSnapshot",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of orders",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/Order"
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "order" ],
+        "summary" : "Create an order",
+        "description" : "Creates an order.",
+        "operationId" : "createOrder",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "withPcSnapshot",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "advancedFulfillment",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "false"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Order"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "An order",
+            "schema" : {
+              "$ref" : "#/definitions/Order"
+            }
+          }
+        }
+      }
+    },
+    "/orders/{id}" : {
+      "get" : {
+        "tags" : [ "order" ],
+        "summary" : "Get order by ID",
+        "description" : "Returns an order by ID.",
+        "operationId" : "findOrderById",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "withPcSnapshot",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "withDocumentData",
+          "in" : "query",
+          "description" : "Include base64 document data in response, false by default",
+          "required" : false,
+          "type" : "boolean",
+          "default" : false
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "An order",
+            "schema" : {
+              "$ref" : "#/definitions/Order"
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "order" ],
+        "summary" : "Update an order",
+        "description" : "Updates an order.",
+        "operationId" : "updateOrder",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/Order"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "An order",
+            "schema" : {
+              "$ref" : "#/definitions/Order"
+            }
+          }
+        }
+      }
+    },
+    "/orders/{id}/complete" : {
+      "post" : {
+        "tags" : [ "order" ],
+        "summary" : "Complete an order",
+        "description" : "Completes an order.",
+        "operationId" : "completeOrder",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "An order",
+            "schema" : {
+              "$ref" : "#/definitions/Order"
+            }
+          }
+        }
+      }
+    },
+    "/orders/{id}/cancel" : {
+      "post" : {
+        "tags" : [ "order" ],
+        "summary" : "Cancel an order",
+        "description" : "Cancels an order.",
+        "operationId" : "cancelOrder",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "An order",
+            "schema" : {
+              "$ref" : "#/definitions/Order"
+            }
+          }
+        }
+      }
+    },
+    "/orders/{id}/fulfillments" : {
+      "get" : {
+        "tags" : [ "order" ],
+        "summary" : "Get list of fulfillments for order.",
+        "description" : "Get list of fulfillments for order.",
+        "operationId" : "getOrderFulfillments",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "List of fulfillments",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/OrderItemFulfillment"
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "order" ],
+        "summary" : "Create a fulfillment",
+        "description" : "Creates a fulfillment",
+        "operationId" : "createFulfillment",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/OrderItemFulfillment"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Fulfillment",
+            "schema" : {
+              "$ref" : "#/definitions/OrderItemFulfillment"
+            }
+          }
+        }
+      }
+    },
+    "/orders/{id}/checkStatus" : {
+      "get" : {
+        "tags" : [ "order" ],
+        "summary" : "Get order by ID with refreshed item status from external services",
+        "description" : "Returns an order by ID.",
+        "operationId" : "findOrderExternalStatus",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "withDocumentData",
+          "in" : "query",
+          "description" : "Include base64 document data in response, false by default",
+          "required" : false,
+          "type" : "boolean",
+          "default" : false
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "An order",
+            "schema" : {
+              "$ref" : "#/definitions/Order"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Benefit" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        }
+      }
+    },
+    "BenefitItem" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "discountType" : {
+          "type" : "string",
+          "enum" : [ "AMOUNT", "PERCENT" ]
+        },
+        "type" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "reduceTaxBase" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Brand" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "externalId" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Bundle" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "externalId" : {
+          "type" : "string"
+        },
+        "variations" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Variation"
+          }
+        }
+      }
+    },
+    "BundleItem" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "quantity" : {
+          "type" : "number"
+        },
+        "variations" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Variation"
+          }
+        }
+      }
+    },
+    "Cart" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "status" : {
+          "type" : "string",
+          "enum" : [ "OPEN", "EXPIRED", "ABANDONED", "CHECKED_OUT" ]
+        },
+        "currency" : {
+          "type" : "string",
+          "enum" : [ "EUR" ]
+        },
+        "amount" : {
+          "type" : "number"
+        },
+        "discountAmount" : {
+          "type" : "number"
+        },
+        "taxAmount" : {
+          "type" : "number"
+        },
+        "amountExTax" : {
+          "type" : "number"
+        },
+        "expiresAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "customerId" : {
+          "type" : "string"
+        },
+        "channel" : {
+          "$ref" : "#/definitions/Channel"
+        },
+        "location" : {
+          "$ref" : "#/definitions/Location"
+        },
+        "items" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CartItem"
+          }
+        },
+        "order" : {
+          "$ref" : "#/definitions/Order"
+        },
+        "payments" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CommonPayment"
+          }
+        },
+        "discounts" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Discount"
+          }
+        },
+        "uniqueDocuments" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CartItemDocument"
+          }
+        },
+        "pricingPropertiesAggregate" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KeyValue"
+          }
+        },
+        "customerNotice" : {
+          "type" : "string"
+        },
+        "pricesUpdatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      }
+    },
+    "CartItem" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "translations" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        },
+        "quantity" : {
+          "type" : "number"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "unit" : {
+          "type" : "string",
+          "enum" : [ "ITEM", "GRAM", "DECAGRAM", "KG", "T", "LITER", "M", "M2", "M3", "WATT" ]
+        },
+        "currency" : {
+          "type" : "string",
+          "enum" : [ "EUR" ]
+        },
+        "price" : {
+          "type" : "number"
+        },
+        "priceExTax" : {
+          "type" : "number"
+        },
+        "amount" : {
+          "type" : "number"
+        },
+        "discountAmount" : {
+          "type" : "number"
+        },
+        "taxAmount" : {
+          "type" : "number"
+        },
+        "amountExTax" : {
+          "type" : "number"
+        },
+        "expiresAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "externalId" : {
+          "type" : "string"
+        },
+        "pricingId" : {
+          "type" : "string"
+        },
+        "pricingScheme" : {
+          "type" : "string",
+          "enum" : [ "BASE_PRICING", "GOLDEN_POINTS", "LOYALTY_SCHEME" ]
+        },
+        "taxes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Tax"
+          }
+        },
+        "discounts" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Discount"
+          }
+        },
+        "canBeReimbursed" : {
+          "type" : "boolean"
+        },
+        "bundleSelection" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Bundle"
+          }
+        },
+        "pricingProperties" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KeyValue"
+          }
+        },
+        "benefit" : {
+          "$ref" : "#/definitions/Benefit"
+        },
+        "metadata" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KeyValue"
+          }
+        },
+        "attributes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CartItemAttribute"
+          }
+        },
+        "modifiers" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CartItemProductModifier"
+          }
+        },
+        "productVariation" : {
+          "$ref" : "#/definitions/CommonItemVariation"
+        },
+        "documents" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CartItemDocument"
+          }
+        },
+        "orderReadiness" : {
+          "type" : "string",
+          "enum" : [ "READY", "NOT_READY" ]
+        },
+        "linkedItems" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CartItem"
+          }
+        },
+        "parentLink" : {
+          "$ref" : "#/definitions/CartItem"
+        },
+        "relatedItems" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CartItem"
+          }
+        },
+        "relatedTo" : {
+          "$ref" : "#/definitions/CartItem"
+        }
+      }
+    },
+    "CartItemAttribute" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "value" : {
+          "type" : "string"
+        },
+        "productAttribute" : {
+          "$ref" : "#/definitions/CommonItemAttribute"
+        }
+      }
+    },
+    "CartItemDocument" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "translations" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "url" : {
+          "type" : "string"
+        },
+        "print" : {
+          "type" : "boolean"
+        },
+        "signatureRequired" : {
+          "type" : "boolean"
+        },
+        "data" : {
+          "type" : "string"
+        }
+      }
+    },
+    "CartItemProductModifier" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "translations" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "SINGLE_SELECTION", "MULTIPLE_SELECTION", "READONLY" ]
+        },
+        "externalId" : {
+          "type" : "string"
+        },
+        "values" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CartItemProductModifierValue"
+          }
+        }
+      }
+    },
+    "CartItemProductModifierValue" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "translations" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "externalId" : {
+          "type" : "string"
+        },
+        "default" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "Cashback" : {
+      "type" : "object",
+      "properties" : {
+        "validFor" : {
+          "$ref" : "#/definitions/ValidFor"
+        },
+        "cashbackIntervals" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CashbackInterval"
+          }
+        }
+      }
+    },
+    "CashbackInterval" : {
+      "type" : "object",
+      "properties" : {
+        "amountFromExclusive" : {
+          "type" : "number"
+        },
+        "amountToInclusive" : {
+          "type" : "number"
+        },
+        "cashbackAmount" : {
+          "type" : "number"
+        },
+        "cashbackPercent" : {
+          "type" : "number"
+        }
+      }
+    },
+    "Channel" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Collection" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "externalId" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "handle" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string",
+          "enum" : [ "VISIBLE", "HIDDEN" ]
+        },
+        "sortOrder" : {
+          "type" : "string",
+          "enum" : [ "MANUAL" ]
+        },
+        "level" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "parent" : {
+          "$ref" : "#/definitions/Collection"
+        },
+        "images" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Image"
+          }
+        }
+      }
+    },
+    "CommonItemAttribute" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "translations" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "key" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "INTEGER", "DECIMAL", "STRING", "DATE", "DATETIME" ]
+        },
+        "externalId" : {
+          "type" : "string"
+        }
+      }
+    },
+    "CommonItemVariation" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "productId" : {
+          "type" : "string"
+        },
+        "sku" : {
+          "type" : "string"
+        },
+        "variationProductType" : {
+          "type" : "string",
+          "enum" : [ "DIGITAL", "PHYSICAL", "FEE" ]
+        },
+        "service" : {
+          "$ref" : "#/definitions/CommonService"
+        },
+        "preparationTimeInSeconds" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "variationSchemaVersion" : {
+          "type" : "string"
+        },
+        "variationSnapshot" : {
+          "description" : "Variation object",
+          "$ref" : "#/definitions/Variation"
+        }
+      }
+    },
+    "CommonPayment" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "source" : {
+          "type" : "string",
+          "enum" : [ "EMA", "PAYMENT", "LOYALTY" ]
+        },
+        "transactionId" : {
+          "type" : "string"
+        }
+      }
+    },
+    "CommonService" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "pickupThreshold" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "Discount" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "PERCENTAGE", "AMOUNT" ]
+        },
+        "amount" : {
+          "type" : "number"
+        },
+        "code" : {
+          "type" : "string"
+        }
+      }
+    },
+    "FulfillmentDocument" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "translations" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "url" : {
+          "type" : "string"
+        },
+        "print" : {
+          "type" : "boolean"
+        },
+        "signatureRequired" : {
+          "type" : "boolean"
+        },
+        "data" : {
+          "type" : "string"
+        },
+        "orderItemDocuments" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OrderItemDocument"
+          }
+        }
+      }
+    },
+    "FulfillmentResult" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "REIMBURSEMENT_CODE", "OTHER" ]
+        }
+      }
+    },
+    "Image" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "url" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string"
+        },
+        "ratio" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Information" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "url" : {
+          "type" : "string"
+        }
+      }
+    },
+    "KeyValue" : {
+      "type" : "object",
+      "properties" : {
+        "key" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Location" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Order" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "friendlyId" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string",
+          "enum" : [ "OPEN", "APPROVED", "PROCESSING", "FULFILLED", "FAILED", "CANCELED" ]
+        },
+        "currency" : {
+          "type" : "string",
+          "enum" : [ "EUR" ]
+        },
+        "amount" : {
+          "type" : "number"
+        },
+        "discountAmount" : {
+          "type" : "number"
+        },
+        "taxAmount" : {
+          "type" : "number"
+        },
+        "amountExTax" : {
+          "type" : "number"
+        },
+        "payments" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CommonPayment"
+          }
+        },
+        "items" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OrderItem"
+          }
+        },
+        "cart" : {
+          "$ref" : "#/definitions/SimpleCart"
+        },
+        "invoiceId" : {
+          "type" : "string"
+        },
+        "receiptId" : {
+          "type" : "string"
+        },
+        "discounts" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Discount"
+          }
+        },
+        "uniqueFulfillments" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OrderItemFulfillment"
+          }
+        },
+        "pricingPropertiesAggregate" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KeyValue"
+          }
+        },
+        "uniqueDocuments" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OrderItemDocument"
+          }
+        },
+        "customerNotice" : {
+          "type" : "string"
+        }
+      }
+    },
+    "OrderItem" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "translations" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        },
+        "quantity" : {
+          "type" : "number"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "unit" : {
+          "type" : "string",
+          "enum" : [ "ITEM", "GRAM", "DECAGRAM", "KG", "T", "LITER", "M", "M2", "M3", "WATT" ]
+        },
+        "currency" : {
+          "type" : "string",
+          "enum" : [ "EUR" ]
+        },
+        "price" : {
+          "type" : "number"
+        },
+        "priceExTax" : {
+          "type" : "number"
+        },
+        "amount" : {
+          "type" : "number"
+        },
+        "discountAmount" : {
+          "type" : "number"
+        },
+        "taxAmount" : {
+          "type" : "number"
+        },
+        "amountExTax" : {
+          "type" : "number"
+        },
+        "expiresAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "externalId" : {
+          "type" : "string"
+        },
+        "pricingId" : {
+          "type" : "string"
+        },
+        "pricingScheme" : {
+          "type" : "string",
+          "enum" : [ "BASE_PRICING", "GOLDEN_POINTS", "LOYALTY_SCHEME" ]
+        },
+        "taxes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Tax"
+          }
+        },
+        "discounts" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Discount"
+          }
+        },
+        "canBeReimbursed" : {
+          "type" : "boolean"
+        },
+        "bundleSelection" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Bundle"
+          }
+        },
+        "pricingProperties" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KeyValue"
+          }
+        },
+        "benefit" : {
+          "$ref" : "#/definitions/Benefit"
+        },
+        "metadata" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KeyValue"
+          }
+        },
+        "attributes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OrderItemAttribute"
+          }
+        },
+        "modifiers" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OrderItemProductModifier"
+          }
+        },
+        "fulfillment" : {
+          "$ref" : "#/definitions/OrderItemFulfillment"
+        },
+        "productVariation" : {
+          "$ref" : "#/definitions/CommonItemVariation"
+        },
+        "documents" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OrderItemDocument"
+          }
+        },
+        "reimbursementDescription" : {
+          "type" : "string"
+        },
+        "reimbursementCode" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string",
+          "enum" : [ "OPEN", "APPROVED", "PROCESSING", "FULFILLED", "FAILED", "CANCELED" ]
+        },
+        "linkedItems" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OrderItem"
+          }
+        },
+        "parentLink" : {
+          "$ref" : "#/definitions/OrderItem"
+        },
+        "relatedItems" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OrderItem"
+          }
+        },
+        "relatedTo" : {
+          "$ref" : "#/definitions/OrderItem"
+        }
+      }
+    },
+    "OrderItemAttribute" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "value" : {
+          "type" : "string"
+        },
+        "productAttribute" : {
+          "$ref" : "#/definitions/CommonItemAttribute"
+        }
+      }
+    },
+    "OrderItemDocument" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "translations" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "url" : {
+          "type" : "string"
+        },
+        "print" : {
+          "type" : "boolean"
+        },
+        "signatureRequired" : {
+          "type" : "boolean"
+        },
+        "data" : {
+          "type" : "string"
+        },
+        "fulfillmentDocument" : {
+          "$ref" : "#/definitions/FulfillmentDocument"
+        }
+      }
+    },
+    "OrderItemFulfillment" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "SERVICE", "MANUAL", "SHIPMENT", "NONE" ]
+        },
+        "status" : {
+          "type" : "string",
+          "enum" : [ "PENDING", "PROCESSING", "SUCCEEDED", "CANCELLED", "FAILED", "FAILED_WITH_ERROR" ]
+        },
+        "fulfillmentMethod" : {
+          "type" : "string",
+          "enum" : [ "API", "MANUAL" ]
+        },
+        "serviceHandle" : {
+          "type" : "string"
+        },
+        "results" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/FulfillmentResult"
+          }
+        },
+        "documents" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/FulfillmentDocument"
+          }
+        }
+      }
+    },
+    "OrderItemProductModifier" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "translations" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "SINGLE_SELECTION", "MULTIPLE_SELECTION", "READONLY" ]
+        },
+        "externalId" : {
+          "type" : "string"
+        },
+        "values" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OrderItemProductModifierValue"
+          }
+        }
+      }
+    },
+    "OrderItemProductModifierValue" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "translations" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "externalId" : {
+          "type" : "string"
+        },
+        "default" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "PriceInterval" : {
+      "type" : "object",
+      "properties" : {
+        "amountFromExclusive" : {
+          "type" : "number"
+        },
+        "amountToInclusive" : {
+          "type" : "number"
+        },
+        "pricing" : {
+          "$ref" : "#/definitions/Pricing"
+        }
+      }
+    },
+    "Prices" : {
+      "type" : "object",
+      "properties" : {
+        "validAt" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "basePricing" : {
+          "$ref" : "#/definitions/Pricing"
+        },
+        "specialPricing" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/SpecialPricing"
+            }
+          }
+        }
+      }
+    },
+    "Pricing" : {
+      "type" : "object",
+      "properties" : {
+        "price" : {
+          "type" : "number"
+        },
+        "priceWithoutTax" : {
+          "type" : "number"
+        },
+        "basePrice" : {
+          "type" : "number"
+        },
+        "taxAmount" : {
+          "type" : "number"
+        },
+        "taxPercent" : {
+          "type" : "number"
+        },
+        "discountAmount" : {
+          "type" : "number"
+        },
+        "discountPercent" : {
+          "type" : "number"
+        },
+        "currency" : {
+          "type" : "string",
+          "enum" : [ "EUR" ]
+        },
+        "cashback" : {
+          "$ref" : "#/definitions/Cashback"
+        }
+      }
+    },
+    "Product" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "translations" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        },
+        "externalId" : {
+          "type" : "string"
+        },
+        "shortName" : {
+          "type" : "string"
+        },
+        "longName" : {
+          "type" : "string"
+        },
+        "shortDescription" : {
+          "type" : "string"
+        },
+        "longDescription" : {
+          "type" : "string"
+        },
+        "handle" : {
+          "type" : "string"
+        },
+        "unit" : {
+          "type" : "string",
+          "enum" : [ "ITEM", "GRAM", "DECAGRAM", "KG", "T", "LITER", "M", "M2", "M3", "WATT" ]
+        },
+        "pricingType" : {
+          "type" : "string",
+          "enum" : [ "FIXED", "VARIABLE" ]
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "DIGITAL", "PHYSICAL", "FEE" ]
+        },
+        "bundlingType" : {
+          "type" : "string",
+          "enum" : [ "NONE", "COMBO", "BUNDLE" ]
+        },
+        "availability" : {
+          "type" : "string",
+          "enum" : [ "AVAILABLE", "AVAILABLE_AS_ADDON", "UNAVAILABLE" ]
+        },
+        "fulfillmentType" : {
+          "type" : "string",
+          "enum" : [ "SERVICE", "MANUAL", "SHIPMENT", "NONE" ]
+        },
+        "attributes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ProductAttribute"
+          }
+        },
+        "variations" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Variation"
+          }
+        },
+        "variationOptions" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/VariationOption"
+          }
+        },
+        "modifiers" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ProductModifier"
+          }
+        },
+        "collections" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Collection"
+          }
+        },
+        "addons" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Collection"
+          }
+        },
+        "recommendations" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Collection"
+          }
+        },
+        "images" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Image"
+          }
+        },
+        "information" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Information"
+          }
+        },
+        "service" : {
+          "$ref" : "#/definitions/Service"
+        },
+        "brand" : {
+          "$ref" : "#/definitions/Brand"
+        },
+        "reimbursement" : {
+          "type" : "string",
+          "enum" : [ "AVAILABLE", "NOT_AVAILABLE", "VARIABLE" ]
+        },
+        "reimbursementDescription" : {
+          "type" : "string"
+        },
+        "keywords" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "ProductAttribute" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "key" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "string"
+        },
+        "valueType" : {
+          "type" : "string",
+          "enum" : [ "INTEGER", "DECIMAL", "STRING", "DATE", "DATETIME" ]
+        },
+        "source" : {
+          "type" : "string",
+          "enum" : [ "PREDEFINED", "USER_DEFINED" ]
+        }
+      }
+    },
+    "ProductModifier" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string",
+          "enum" : [ "SINGLE_SELECTION", "MULTIPLE_SELECTION", "READONLY" ]
+        },
+        "values" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ProductModifierValue"
+          }
+        }
+      }
+    },
+    "ProductModifierValue" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "readonly" : {
+          "type" : "boolean"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "default" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "Service" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "handle" : {
+          "type" : "string"
+        },
+        "fulfillmentUrl" : {
+          "$ref" : "#/definitions/ServiceUrl"
+        },
+        "serviceId" : {
+          "type" : "string"
+        },
+        "fulfillmentMethod" : {
+          "type" : "string",
+          "enum" : [ "API", "MANUAL" ]
+        },
+        "pickupThreshold" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "ServiceRequestParameter" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "key" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "string"
+        },
+        "location" : {
+          "type" : "string",
+          "enum" : [ "QUERY", "HEADER" ]
+        }
+      }
+    },
+    "ServiceUrl" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "url" : {
+          "type" : "string"
+        },
+        "parameters" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/ServiceRequestParameter"
+          }
+        }
+      }
+    },
+    "SimpleCart" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "customerId" : {
+          "type" : "string"
+        },
+        "locationId" : {
+          "type" : "string"
+        },
+        "previewedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      }
+    },
+    "SpecialPricing" : {
+      "type" : "object",
+      "properties" : {
+        "validFrom" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "validTo" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "validFor" : {
+          "$ref" : "#/definitions/ValidFor"
+        },
+        "benefitItem" : {
+          "$ref" : "#/definitions/BenefitItem"
+        },
+        "cashback" : {
+          "$ref" : "#/definitions/Cashback"
+        },
+        "priceIntervals" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/PriceInterval"
+          }
+        },
+        "handle" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Tax" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string",
+          "enum" : [ "ENABLED", "DISABLED" ]
+        },
+        "taxRates" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TaxRate"
+          }
+        }
+      }
+    },
+    "TaxRate" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "validFrom" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "validTo" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "percentage" : {
+          "type" : "number"
+        }
+      }
+    },
+    "ValidFor" : {
+      "type" : "object",
+      "properties" : {
+        "requirement" : {
+          "type" : "string",
+          "enum" : [ "HAS_GOLDEN_POINTS", "HAS_GOLDEN_POINTS_AND_HAS_PETROL_CARD", "HAS_GOLDEN_POINTS_AND_LOGGED_IN", "HAS_GOLDEN_POINTS_AND_HAS_PETROL_CARD_OR_LOGGED_IN", "HAS_CARD", "HAS_CARD_OR_LOGGED_IN", "PAID_WITH" ]
+        },
+        "values" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
+        }
+      }
+    },
+    "Variation" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "externalId" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "handle" : {
+          "type" : "string"
+        },
+        "sku" : {
+          "type" : "string"
+        },
+        "product" : {
+          "$ref" : "#/definitions/Product"
+        },
+        "attributes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/VariationAttribute"
+          }
+        },
+        "options" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/VariationOptionValue"
+          }
+        },
+        "images" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Image"
+          }
+        },
+        "information" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Information"
+          }
+        },
+        "prices" : {
+          "$ref" : "#/definitions/Prices"
+        },
+        "keywords" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "bundleItems" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/BundleItem"
+          }
+        },
+        "inStock" : {
+          "type" : "boolean"
+        },
+        "stockQuantity" : {
+          "type" : "number"
+        }
+      }
+    },
+    "VariationAttribute" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "key" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "string"
+        },
+        "valueType" : {
+          "type" : "string",
+          "enum" : [ "INTEGER", "DECIMAL", "STRING", "DATE", "DATETIME" ]
+        },
+        "source" : {
+          "type" : "string",
+          "enum" : [ "PREDEFINED", "USER_DEFINED" ]
+        }
+      }
+    },
+    "VariationOption" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "externalId" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "values" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/VariationOptionValue"
+          }
+        }
+      }
+    },
+    "VariationOptionValue" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "createdAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "updatedAt" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "name" : {
+          "type" : "string"
+        },
+        "option" : {
+          "$ref" : "#/definitions/VariationOption"
+        },
+        "default" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "LocationAndCartItems" : {
+      "type" : "object",
+      "properties" : {
+        "location" : {
+          "$ref" : "#/definitions/Location"
+        },
+        "itemsInStock" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CartItem"
+          }
+        },
+        "itemsOutOfStock" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CartItem"
+          }
+        }
+      }
+    },
+    "LocationAvailability" : {
+      "type" : "object",
+      "properties" : {
+        "locations" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/Location"
+          }
+        },
+        "additionalItems" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CartItem"
+          }
+        }
+      }
+    },
+    "LocationChange" : {
+      "type" : "object",
+      "properties" : {
+        "newLocation" : {
+          "$ref" : "#/definitions/Location"
+        },
+        "additionalItems" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/CartItem"
+          }
+        }
+      }
+    },
+    "PricingUpdate" : {
+      "type" : "object",
+      "properties" : {
+        "pricingId" : {
+          "type" : "string"
+        },
+        "pricingType" : {
+          "type" : "string",
+          "enum" : [ "BASE_PRICING", "GOLDEN_POINTS", "LOYALTY_SCHEME" ]
+        }
+      }
+    },
+    "Me" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "firstName" : {
+          "type" : "string"
+        },
+        "lastName" : {
+          "type" : "string"
+        },
+        "posIp" : {
+          "type" : "string"
+        },
+        "securityScheme" : {
+          "type" : "string",
+          "enum" : [ "EMA", "KEYCLOAK", "MFP" ]
+        }
+      }
+    }
+  }
+}

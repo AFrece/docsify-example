@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Swagger UI</title>
+    
+    <!-- required assets to run swagger-ui -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css" media="screen">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css" rel="stylesheet" type="text/css" media="screen">
+    <link href="http://cdn.magloft.com/swagger/swagger-ui.min.css" rel="stylesheet" type="text/css" media="screen">
+    <script src="http://cdn.magloft.com/swagger/swagger-ui.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js" type="text/javascript" charset="utf-8"></script>
+    
+    <!-- remove to disable json/xml editor -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-json.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-xml.js" type="text/javascript" charset="utf-8"></script>
+
+    <!-- initialize swagger-ui -->
+    <script type="text/javascript">
+      $(function () {
+        var swaggerUi = new SwaggerUi({
+          url: "/_swagger/swagger.json",
+          supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+          onComplete: function(swaggerApi, swaggerUi) {
+            $('.button-collapse').sideNav({menuWidth: 300});
+            $('ul.tabs').tabs();
+            $('select').material_select();
+            $('.collapsible').collapsible({accordion: false});
+          }
+        });
+        swaggerUi.load();
+      });
+    </script>
+  </head>
+  <body></body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "convert": "C:/app/nodejs/node_modules/.bin/docsify-pdf-converter.cmd"
+  }
+}
