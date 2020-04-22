@@ -148,7 +148,7 @@ Cart->"Fulfillment service" : fulfill(Order)
 @enduml
 ```
 
-<i style="width:200px">![zoomable image](https://d2slcw3kip6qmk.cloudfront.net/marketing/pages/chart/examples/hospitalerdiagram.svg	)</i>
+![zoomable image](https://d2slcw3kip6qmk.cloudfront.net/marketing/pages/chart/examples/hospitalerdiagram.svg)
 
 Items being added to cart must be present in Product Catalog (`product-service`).
 

@@ -1,0 +1,2299 @@
+openapi: 3.0.3
+info:
+  title: Cart service API
+  description: __Cart service API__ (code name __cart-service-api__) provides a REST API for Cart related actions such as creating a Cart, adding and removing Items from Cart, creating Order from
+    Cart and Order fulfillments.
+  termsOfService: 'http://www.wtfpl.net/about/'
+  contact:
+    name: Sunesis Ltd.
+    url: 'https://sunesis.si/en/'
+    email: 'info@sunesis.si'
+  license:
+    name: WTFPL
+    url: 'http://www.wtfpl.net/about/'
+  version: v1.0.0
+servers:
+  - url: 'https://apis.kumuluz.com/{ENVIRONMENT}/cart-service-api/v1'
+    description: remote
+    variables:
+      ENVIRONMENT:
+        enum:
+          - dev
+          - test
+          - stage
+          - prod
+        default: test
+        description: Remote enironment, hosted by Sunesis Ltd.
+  - url: 'http://localhost:8080/v1'
+    description: local
+tags:
+  - name: Cart
+    description: Operation for working with the Cart object, such as creating Cart, adding and removing Items, etc.
+  - name: Order
+    description: Operation for working with the Order object, such as creating, completing, canceling, etc.
+paths:
+  /carts:
+    post:
+      tags:
+        - Cart
+      summary: Create a new Cart.
+      description: 'Creates a __new Cart__ with or without Items.
+      
+      
+      For details __how to get minimum required input data__, see busness documentation [here](https://afrece.github.io/docsify-example/#/developer-guide?id=create-an-empty-cart).
+      
+      
+      ---
+      
+      
+      For details __how to get other relevant input data__, see busness documentation [here](https://afrece.github.io/docsify-example/#/developer-guide?id=getting-products-and-variations-from-product-catalog).
+
+
+      __OR__
+      
+      
+      For details __how to get other relevant input data__, see API documentation of Product Catalog [here](https://afrece.github.io/docsify-example/swagger.html#/order/getOrderFulfillments).
+      
+      
+      ---
+      
+      
+      For details __how this operation fits into Cart lifecycle__, see busness documentation [here](https://afrece.github.io/docsify-example/#/developer-guide?id=usage).'
+      externalDocs:
+        description: Business documentation for create Cart.
+        url: 'https://afrece.github.io/docsify-example/#/developer-guide?id=the-api'
+      operationId: createCart
+      parameters:
+        - $ref: '#/components/parameters/withPcSnapshot'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cart'
+            examples:
+              withoutItems:
+                $ref: '#/components/examples/parameter-postCart-withoutItems'
+              withItemsBySku:
+                $ref: '#/components/examples/parameter-postCart-withItemsBySku'
+              withItemsById:
+                $ref: '#/components/examples/parameter-postCart-withItemsById'
+        required: false
+      responses:
+        201:
+          description: A newly __created Cart__.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+              examples:
+                withoutItems:
+                  $ref: '#/components/examples/response-postCart-withoutItems'
+                withItems:
+                  $ref: '#/components/examples/response-postCart-withItems'
+        404:
+          description: When __invalid Location or Channel__ is specified.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+              examples:
+                absentChannel:
+                  $ref: '#/components/examples/error-postCart-absentChannel'
+                invalidChannel:
+                  $ref: '#/components/examples/error-postCart-invalidChannel'
+                absentLocation:
+                  $ref: '#/components/examples/error-postCart-absentLocation'
+                invalidLocation:
+                  $ref: '#/components/examples/error-postCart-invalidLocation'
+      x-codegen-request-body-name: body
+      security: 
+        - apiKey: []
+        - oAuth: 
+          - write:cart
+  '/carts/{cartId}/items':
+    post:
+      tags:
+        - Cart
+      summary: Adds Item to Cart.
+      description: __Adds a new Item__ to an existing Cart.
+        
+        
+        Variation __attributes__ which are of source type `USER_DEFINED` __must be passed__ with the variation when adding to Cart.
+        
+        
+        __Attributes__ of source type `PREDEFINED` __do not need to be provided__ by the client, instead they are automatically added to the Cart Item.
+      externalDocs:
+        description: Business documentation for adding Items to Cart.
+        url: https://afrece.github.io/docsify-example/#/developer-guide?id=add-an-item-to-cart
+      operationId: addCartItem
+      parameters:
+        - $ref: '#/components/parameters/withPcSnapshot'
+        - $ref: '#/components/parameters/cartId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartItem'
+            examples:
+              bySku:
+                $ref: '#/components/examples/parameter-postCartItem-bySku'
+              byId:
+                $ref: '#/components/examples/parameter-postCartItem-byId'
+              maximum:
+                $ref: '#/components/examples/parameter-postCartItem-maximum'
+        required: false
+      responses:
+        200:
+          description: The existing __Cart with the added Item__.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+              examples:
+                withItems:
+                  $ref: '#/components/examples/response-postCart-withItems'
+        400:
+          description: When some __invalid data__ is specified in the request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+              examples:
+                itemNotInStock:
+                  $ref: '#/components/examples/error-postCartItem-itemNotInStock'
+                noValidPricing:
+                  $ref: '#/components/examples/error-postCartItem-noValidPricing'
+                invalidProductVariation:
+                  $ref: '#/components/examples/error-postCartItem-invalidProductVariation'
+        409:
+          description: When some __conflict__ occured.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+              examples:
+                optimisticLock:
+                  $ref: '#/components/examples/error-any-optimisticLock'
+      x-codegen-request-body-name: body
+      security: 
+        - apiKey: []
+        - oAuth: 
+          - write:cart
+  '/carts/{cartId}/items/{itemId}':
+    delete:
+      tags:
+        - Cart
+      summary: Removes Item from Cart
+      description: __Removes an existing Item__ from an existing Cart.
+      externalDocs:
+        description: Business documentation for removing Items from Cart.
+        url: https://afrece.github.io/docsify-example/#/developer-guide?id=remove-an-item-from-cart
+      operationId: removeCartItem
+      parameters:
+        - $ref: '#/components/parameters/withPcSnapshot'
+        - $ref: '#/components/parameters/cartId'
+        - name: itemId
+          in: path
+          description: Unique identifier (ID) of the Item (i.e. UUID) to be removed from the Cart.
+          schema:
+            type: string
+          example: 0cec6873-b7d0-45f9-839d-cb916ec6ac2d
+          required: true
+      responses:
+        200:
+          description: The existing __Cart with the Item removed__.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        400:
+          description: When some __invalid data__ is specified in the request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+              examples:
+                invalidItem:
+                  $ref: '#/components/examples/error-removeCartItem-invalidItem'
+        409:
+          description: When some __conflict__ occured.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+              examples:
+                optimisticLock:
+                  $ref: '#/components/examples/error-any-optimisticLock'
+      security: 
+        - apiKey: []
+        - oAuth: 
+          - write:cart
+  /orders:
+    post:
+      tags:
+        - Order
+      summary: Create an order
+      description: Creates an order.
+      operationId: createOrder
+      parameters:
+        - $ref: '#/components/parameters/withPcSnapshot'
+          in: query
+          schema:
+            type: boolean
+        - name: advancedFulfillment
+          in: query
+          schema:
+            type: string
+            default: 'false'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+        required: false
+      responses:
+        '201':
+          description: An order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+      x-codegen-request-body-name: body
+      security: 
+        - apiKey: []
+        - oAuth: 
+          - write:order
+  '/orders/{id}/complete':
+    post:
+      tags:
+        - Order
+      summary: Complete an order
+      description: Completes an order.
+      operationId: completeOrder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: An order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+      security: 
+        - apiKey: []
+        - oAuth: 
+          - write:order
+  '/orders/{id}/cancel':
+    post:
+      tags:
+        - Order
+      summary: Cancel an order
+      description: Cancels an order.
+      operationId: cancelOrder
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: An order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+      security: 
+        - apiKey: []
+        - oAuth: 
+          - write:order
+  '/orders/{id}/checkStatus':
+    get:
+      tags:
+        - Order
+      summary: Get order by ID with refreshed item status from external services
+      description: Returns an order by ID.
+      operationId: findOrderExternalStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: withDocumentData
+          in: query
+          description: 'Include base64 document data in response, false by default'
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: An order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+      security: 
+        - apiKey: []
+        - oAuth: 
+          - read:order
+components:
+  schemas:
+    Benefit:
+      type: object
+      properties:
+        id:
+          type: string
+    BenefitItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        discountType:
+          type: string
+          enum:
+            - AMOUNT
+            - PERCENT
+        type:
+          type: string
+        name:
+          type: string
+        reduceTaxBase:
+          type: string
+    Brand:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        externalId:
+          type: string
+        name:
+          type: string
+    Bundle:
+      type: object
+      properties:
+        id:
+          type: string
+        externalId:
+          type: string
+        variations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Variation'
+    BundleItem:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        quantity:
+          type: number
+        variations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Variation'
+    Cart:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        status:
+          type: string
+          enum:
+            - OPEN
+            - EXPIRED
+            - ABANDONED
+            - CHECKED_OUT
+        currency:
+          type: string
+          enum:
+            - EUR
+        amount:
+          type: number
+        discountAmount:
+          type: number
+        taxAmount:
+          type: number
+        amountExTax:
+          type: number
+        expiresAt:
+          type: integer
+          format: int64
+        customerId:
+          type: string
+        channel:
+          $ref: '#/components/schemas/Channel'
+        location:
+          $ref: '#/components/schemas/Location'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        order:
+          $ref: '#/components/schemas/Order'
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommonPayment'
+        discounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Discount'
+        uniqueDocuments:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItemDocument'
+        pricingPropertiesAggregate:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyValue'
+        customerNotice:
+          type: string
+        pricesUpdatedAt:
+          type: integer
+          format: int64
+    CartItem:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        translations:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: string
+        quantity:
+          type: number
+        name:
+          type: string
+        unit:
+          type: string
+          enum:
+            - ITEM
+            - GRAM
+            - DECAGRAM
+            - KG
+            - T
+            - LITER
+            - M
+            - M2
+            - M3
+            - WATT
+        currency:
+          type: string
+          enum:
+            - EUR
+        price:
+          type: number
+        priceExTax:
+          type: number
+        amount:
+          type: number
+        discountAmount:
+          type: number
+        taxAmount:
+          type: number
+        amountExTax:
+          type: number
+        expiresAt:
+          type: integer
+          format: int64
+        externalId:
+          type: string
+        pricingId:
+          type: string
+        pricingScheme:
+          type: string
+          enum:
+            - BASE_PRICING
+            - GOLDEN_POINTS
+            - LOYALTY_SCHEME
+        taxes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tax'
+        discounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Discount'
+        canBeReimbursed:
+          type: boolean
+        bundleSelection:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bundle'
+        pricingProperties:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyValue'
+        benefit:
+          $ref: '#/components/schemas/Benefit'
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyValue'
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItemAttribute'
+        modifiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItemProductModifier'
+        productVariation:
+          $ref: '#/components/schemas/CommonItemVariation'
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItemDocument'
+        orderReadiness:
+          type: string
+          enum:
+            - READY
+            - NOT_READY
+        linkedItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        parentLink:
+          $ref: '#/components/schemas/CartItem'
+        relatedItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        relatedTo:
+          $ref: '#/components/schemas/CartItem'
+    CartItemAttribute:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        value:
+          type: string
+        productAttribute:
+          $ref: '#/components/schemas/CommonItemAttribute'
+    CartItemDocument:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        translations:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: string
+        name:
+          type: string
+        url:
+          type: string
+        print:
+          type: boolean
+        signatureRequired:
+          type: boolean
+        data:
+          type: string
+    CartItemProductModifier:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        translations:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            - SINGLE_SELECTION
+            - MULTIPLE_SELECTION
+            - READONLY
+        externalId:
+          type: string
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItemProductModifierValue'
+    CartItemProductModifierValue:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        translations:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: string
+        name:
+          type: string
+        externalId:
+          type: string
+        default:
+          type: boolean
+    Cashback:
+      type: object
+      properties:
+        validFor:
+          $ref: '#/components/schemas/ValidFor'
+        cashbackIntervals:
+          type: array
+          items:
+            $ref: '#/components/schemas/CashbackInterval'
+    CashbackInterval:
+      type: object
+      properties:
+        amountFromExclusive:
+          type: number
+        amountToInclusive:
+          type: number
+        cashbackAmount:
+          type: number
+        cashbackPercent:
+          type: number
+    Channel:
+      type: object
+      properties:
+        id:
+          type: string
+    Collection:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        externalId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        handle:
+          type: string
+        status:
+          type: string
+          enum:
+            - VISIBLE
+            - HIDDEN
+        sortOrder:
+          type: string
+          enum:
+            - MANUAL
+        level:
+          type: integer
+          format: int32
+        parent:
+          $ref: '#/components/schemas/Collection'
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/Image'
+    CommonItemAttribute:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        translations:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: string
+        name:
+          type: string
+        key:
+          type: string
+        type:
+          type: string
+          enum:
+            - INTEGER
+            - DECIMAL
+            - STRING
+            - DATE
+            - DATETIME
+        externalId:
+          type: string
+    CommonItemVariation:
+      type: object
+      properties:
+        id:
+          type: string
+        productId:
+          type: string
+        sku:
+          type: string
+        variationProductType:
+          type: string
+          enum:
+            - DIGITAL
+            - PHYSICAL
+            - FEE
+        service:
+          $ref: '#/components/schemas/CommonService'
+        preparationTimeInSeconds:
+          type: integer
+          format: int32
+        variationSchemaVersion:
+          type: string
+        variationSnapshot:
+          $ref: '#/components/schemas/Variation'
+    CommonPayment:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        source:
+          type: string
+          enum:
+            - EMA
+            - PAYMENT
+            - LOYALTY
+        transactionId:
+          type: string
+    CommonService:
+      type: object
+      properties:
+        id:
+          type: string
+        pickupThreshold:
+          type: integer
+          format: int32
+    Discount:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            - PERCENTAGE
+            - AMOUNT
+        amount:
+          type: number
+        code:
+          type: string
+    FulfillmentDocument:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        translations:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: string
+        name:
+          type: string
+        url:
+          type: string
+        print:
+          type: boolean
+        signatureRequired:
+          type: boolean
+        data:
+          type: string
+        orderItemDocuments:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemDocument'
+    FulfillmentResult:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+        type:
+          type: string
+          enum:
+            - REIMBURSEMENT_CODE
+            - OTHER
+    Image:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        url:
+          type: string
+        type:
+          type: string
+        ratio:
+          type: string
+    Information:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        url:
+          type: string
+    KeyValue:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+    Location:
+      type: object
+      properties:
+        id:
+          type: string
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        friendlyId:
+          type: string
+        status:
+          type: string
+          enum:
+            - OPEN
+            - APPROVED
+            - PROCESSING
+            - FULFILLED
+            - FAILED
+            - CANCELED
+        currency:
+          type: string
+          enum:
+            - EUR
+        amount:
+          type: number
+        discountAmount:
+          type: number
+        taxAmount:
+          type: number
+        amountExTax:
+          type: number
+        payments:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommonPayment'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        cart:
+          $ref: '#/components/schemas/SimpleCart'
+        invoiceId:
+          type: string
+        receiptId:
+          type: string
+        discounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Discount'
+        uniqueFulfillments:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemFulfillment'
+        pricingPropertiesAggregate:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyValue'
+        uniqueDocuments:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemDocument'
+        customerNotice:
+          type: string
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        translations:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: string
+        quantity:
+          type: number
+        name:
+          type: string
+        unit:
+          type: string
+          enum:
+            - ITEM
+            - GRAM
+            - DECAGRAM
+            - KG
+            - T
+            - LITER
+            - M
+            - M2
+            - M3
+            - WATT
+        currency:
+          type: string
+          enum:
+            - EUR
+        price:
+          type: number
+        priceExTax:
+          type: number
+        amount:
+          type: number
+        discountAmount:
+          type: number
+        taxAmount:
+          type: number
+        amountExTax:
+          type: number
+        expiresAt:
+          type: integer
+          format: int64
+        externalId:
+          type: string
+        pricingId:
+          type: string
+        pricingScheme:
+          type: string
+          enum:
+            - BASE_PRICING
+            - GOLDEN_POINTS
+            - LOYALTY_SCHEME
+        taxes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tax'
+        discounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Discount'
+        canBeReimbursed:
+          type: boolean
+        bundleSelection:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bundle'
+        pricingProperties:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyValue'
+        benefit:
+          $ref: '#/components/schemas/Benefit'
+        metadata:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyValue'
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemAttribute'
+        modifiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemProductModifier'
+        fulfillment:
+          $ref: '#/components/schemas/OrderItemFulfillment'
+        productVariation:
+          $ref: '#/components/schemas/CommonItemVariation'
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemDocument'
+        reimbursementDescription:
+          type: string
+        reimbursementCode:
+          type: string
+        status:
+          type: string
+          enum:
+            - OPEN
+            - APPROVED
+            - PROCESSING
+            - FULFILLED
+            - FAILED
+            - CANCELED
+        linkedItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        parentLink:
+          $ref: '#/components/schemas/OrderItem'
+        relatedItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        relatedTo:
+          $ref: '#/components/schemas/OrderItem'
+    OrderItemAttribute:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        value:
+          type: string
+        productAttribute:
+          $ref: '#/components/schemas/CommonItemAttribute'
+    OrderItemDocument:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        translations:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: string
+        name:
+          type: string
+        url:
+          type: string
+        print:
+          type: boolean
+        signatureRequired:
+          type: boolean
+        data:
+          type: string
+        fulfillmentDocument:
+          $ref: '#/components/schemas/FulfillmentDocument'
+    OrderItemFulfillment:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        type:
+          type: string
+          enum:
+            - SERVICE
+            - MANUAL
+            - SHIPMENT
+            - NONE
+        status:
+          type: string
+          enum:
+            - PENDING
+            - PROCESSING
+            - SUCCEEDED
+            - CANCELLED
+            - FAILED
+            - FAILED_WITH_ERROR
+        fulfillmentMethod:
+          type: string
+          enum:
+            - API
+            - MANUAL
+        serviceHandle:
+          type: string
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/FulfillmentResult'
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/FulfillmentDocument'
+    OrderItemProductModifier:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        translations:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            - SINGLE_SELECTION
+            - MULTIPLE_SELECTION
+            - READONLY
+        externalId:
+          type: string
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemProductModifierValue'
+    OrderItemProductModifierValue:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        translations:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: string
+        name:
+          type: string
+        externalId:
+          type: string
+        default:
+          type: boolean
+    PriceInterval:
+      type: object
+      properties:
+        amountFromExclusive:
+          type: number
+        amountToInclusive:
+          type: number
+        pricing:
+          $ref: '#/components/schemas/Pricing'
+    Prices:
+      type: object
+      properties:
+        validAt:
+          type: string
+          format: date-time
+        basePricing:
+          $ref: '#/components/schemas/Pricing'
+        specialPricing:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/SpecialPricing'
+    Pricing:
+      type: object
+      properties:
+        price:
+          type: number
+        priceWithoutTax:
+          type: number
+        basePrice:
+          type: number
+        taxAmount:
+          type: number
+        taxPercent:
+          type: number
+        discountAmount:
+          type: number
+        discountPercent:
+          type: number
+        currency:
+          type: string
+          enum:
+            - EUR
+        cashback:
+          $ref: '#/components/schemas/Cashback'
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        translations:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties:
+              type: string
+        externalId:
+          type: string
+        shortName:
+          type: string
+        longName:
+          type: string
+        shortDescription:
+          type: string
+        longDescription:
+          type: string
+        handle:
+          type: string
+        unit:
+          type: string
+          enum:
+            - ITEM
+            - GRAM
+            - DECAGRAM
+            - KG
+            - T
+            - LITER
+            - M
+            - M2
+            - M3
+            - WATT
+        pricingType:
+          type: string
+          enum:
+            - FIXED
+            - VARIABLE
+        type:
+          type: string
+          enum:
+            - DIGITAL
+            - PHYSICAL
+            - FEE
+        bundlingType:
+          type: string
+          enum:
+            - NONE
+            - COMBO
+            - BUNDLE
+        availability:
+          type: string
+          enum:
+            - AVAILABLE
+            - AVAILABLE_AS_ADDON
+            - UNAVAILABLE
+        fulfillmentType:
+          type: string
+          enum:
+            - SERVICE
+            - MANUAL
+            - SHIPMENT
+            - NONE
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductAttribute'
+        variations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Variation'
+        variationOptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/VariationOption'
+        modifiers:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductModifier'
+        collections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Collection'
+        addons:
+          type: array
+          items:
+            $ref: '#/components/schemas/Collection'
+        recommendations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Collection'
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/Image'
+        information:
+          type: array
+          items:
+            $ref: '#/components/schemas/Information'
+        service:
+          $ref: '#/components/schemas/Service'
+        brand:
+          $ref: '#/components/schemas/Brand'
+        reimbursement:
+          type: string
+          enum:
+            - AVAILABLE
+            - NOT_AVAILABLE
+            - VARIABLE
+        reimbursementDescription:
+          type: string
+        keywords:
+          type: array
+          items:
+            type: string
+    ProductAttribute:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        name:
+          type: string
+        key:
+          type: string
+        type:
+          type: string
+        value:
+          type: string
+        valueType:
+          type: string
+          enum:
+            - INTEGER
+            - DECIMAL
+            - STRING
+            - DATE
+            - DATETIME
+        source:
+          type: string
+          enum:
+            - PREDEFINED
+            - USER_DEFINED
+    ProductModifier:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            - SINGLE_SELECTION
+            - MULTIPLE_SELECTION
+            - READONLY
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductModifierValue'
+    ProductModifierValue:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        readonly:
+          type: boolean
+        name:
+          type: string
+        default:
+          type: boolean
+    Service:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        name:
+          type: string
+        handle:
+          type: string
+        fulfillmentUrl:
+          $ref: '#/components/schemas/ServiceUrl'
+        serviceId:
+          type: string
+        fulfillmentMethod:
+          type: string
+          enum:
+            - API
+            - MANUAL
+        pickupThreshold:
+          type: integer
+          format: int32
+    ServiceRequestParameter:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        key:
+          type: string
+        value:
+          type: string
+        location:
+          type: string
+          enum:
+            - QUERY
+            - HEADER
+    ServiceUrl:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        url:
+          type: string
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/ServiceRequestParameter'
+    SimpleCart:
+      type: object
+      properties:
+        id:
+          type: string
+        customerId:
+          type: string
+        locationId:
+          type: string
+        previewedAt:
+          type: integer
+          format: int64
+    SpecialPricing:
+      type: object
+      properties:
+        validFrom:
+          type: string
+          format: date-time
+        validTo:
+          type: string
+          format: date-time
+        validFor:
+          $ref: '#/components/schemas/ValidFor'
+        benefitItem:
+          $ref: '#/components/schemas/BenefitItem'
+        cashback:
+          $ref: '#/components/schemas/Cashback'
+        priceIntervals:
+          type: array
+          items:
+            $ref: '#/components/schemas/PriceInterval'
+        handle:
+          type: string
+    Tax:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        name:
+          type: string
+        status:
+          type: string
+          enum:
+            - ENABLED
+            - DISABLED
+        taxRates:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaxRate'
+    TaxRate:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        validFrom:
+          type: integer
+          format: int64
+        validTo:
+          type: integer
+          format: int64
+        percentage:
+          type: number
+    ValidFor:
+      type: object
+      properties:
+        requirement:
+          type: string
+          enum:
+            - HAS_GOLDEN_POINTS
+            - HAS_GOLDEN_POINTS_AND_HAS_PETROL_CARD
+            - HAS_GOLDEN_POINTS_AND_LOGGED_IN
+            - HAS_GOLDEN_POINTS_AND_HAS_PETROL_CARD_OR_LOGGED_IN
+            - HAS_CARD
+            - HAS_CARD_OR_LOGGED_IN
+            - PAID_WITH
+        values:
+          type: object
+          additionalProperties:
+            type: object
+            properties: {}
+    Variation:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        externalId:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        handle:
+          type: string
+        sku:
+          type: string
+        product:
+          $ref: '#/components/schemas/Product'
+        attributes:
+          type: array
+          items:
+            $ref: '#/components/schemas/VariationAttribute'
+        options:
+          type: array
+          items:
+            $ref: '#/components/schemas/VariationOptionValue'
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/Image'
+        information:
+          type: array
+          items:
+            $ref: '#/components/schemas/Information'
+        prices:
+          $ref: '#/components/schemas/Prices'
+        keywords:
+          type: array
+          items:
+            type: string
+        bundleItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/BundleItem'
+        inStock:
+          type: boolean
+        stockQuantity:
+          type: number
+    VariationAttribute:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        name:
+          type: string
+        key:
+          type: string
+        type:
+          type: string
+        value:
+          type: string
+        valueType:
+          type: string
+          enum:
+            - INTEGER
+            - DECIMAL
+            - STRING
+            - DATE
+            - DATETIME
+        source:
+          type: string
+          enum:
+            - PREDEFINED
+            - USER_DEFINED
+    VariationOption:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        externalId:
+          type: string
+        name:
+          type: string
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/VariationOptionValue'
+    VariationOptionValue:
+      type: object
+      properties:
+        id:
+          type: string
+        createdAt:
+          type: integer
+          format: int64
+        updatedAt:
+          type: integer
+          format: int64
+        name:
+          type: string
+        option:
+          $ref: '#/components/schemas/VariationOption'
+        default:
+          type: boolean
+    ApiError:
+      type: object
+      properties:
+        ref:
+          type: string
+          format: uuid
+        status:
+          type: integer
+          format: int32
+        code:
+          type: string
+        message:
+          type: string
+        moreInfo:
+          type: string
+        params:
+          type: object
+          additionalProperties:
+            type: string
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+    ValidationError:
+      type: object
+      properties:
+        field:
+          type: string
+        entity:
+          type: string
+        code:
+          type: string
+        message:
+          type: string
+        params:
+          type: object
+          additionalProperties:
+            type: string
+  parameters:
+    withPcSnapshot:
+      name: withPcSnapshot
+      in: query
+      description: 'When viewing order history, it is possible that product or variation has changed in product catalog (different attributes, modifiers or even deletion). Cart __saves full snapshot__ of variation tree structure for each item which should be used when viewing order history. __Client should use the snapshoted data__ to display the details.
+
+
+        `variationSchemaVersion` attribute stores the information for backward compatibility. It is equivalent to product catalog service API major version so the client can use it for displaying details with backward compatibility if/when product catalog changes major version and data structure.
+
+
+        Variation __snapshot is hidden__ by default to reduce JSON size. We enable it with ths parameter query parameter. 
+
+
+Set this parameter to `true` if you want to __unhide snapshot data__. <br /> Default is `false`, which means __snapshot data is hidden__.'
+      example: true
+      schema:
+        type: boolean
+      required: false
+    cartId:
+      name: cartId
+      in: path
+      description: Unique identifier (ID) of the Cart object (i.e. UUID).
+      example: 64bb3832-597b-4e58-9b5c-c3c107c79948
+      schema:
+        type: string
+      required: true
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      description: The API key required by the API gateway.
+      name: API gateway API key
+      in: query
+    oAuth:
+      type: oauth2
+      description: OAuth2 authentication on the API using Keycloak and Bearer token.
+      flows: 
+        clientCredentials:
+          tokenUrl: https://apis.kumuluz.com/{ENVIRONMENT}/auth/realms/business-api-realm/protocol/openid-connect/token
+          refreshUrl: https://apis.kumuluz.com/{ENVIRONMENT}/auth/realms/business-api-realm/protocol/openid-connect/token
+          scopes:
+            read:cart: Read Cart object.
+            write:cart: Create and modify Cart objects.
+            admin:cart: Delete Cart objects.
+            read:order: Read Order object.
+            write:order: Create and modify Order objects.
+            admin:order: Delete Order objects.
+  examples:
+    parameter-postCart-withoutItems:
+      summary: Minimum (Cart without items)
+      description: Minumum Cart data for creation.
+      value:
+        channel:
+          id: cf68586d-8019-4462-8bc6-d77378484e13
+        location:
+          id: 70d1a85e-90c2-4ea0-be3a-9a24294e15ab
+    parameter-postCart-withItemsBySku:
+      summary: Maximum (Cart with Items by SKU)
+      description: All Cart data for creation (including Items, determined through SKU).
+      value:
+        items:
+          - quantity: 1
+            productVariation:
+              sku: 12345678
+              variationProductType: PHYSICAL
+        channel:
+          id: cf68586d-8019-4462-8bc6-d77378484e13
+        location:
+          id: 70d1a85e-90c2-4ea0-be3a-9a24294e15ab
+    parameter-postCart-withItemsById:
+      summary: Maximum (Cart with Items by ID)
+      description: All Cart data for creation (including Items, determined through ID).
+      value:
+        items:
+          - quantity: 1
+            productVariation:
+              id: f3cec99c-d886-4574-9384-af83a3b05282
+        channel:
+          id: cf68586d-8019-4462-8bc6-d77378484e13
+        location:
+          id: 70d1a85e-90c2-4ea0-be3a-9a24294e15ab
+    response-postCart-withoutItems:
+      summary: Minimum (Cart without items)
+      description: All newly created Cart data, excluding Items.
+      value:
+        id: d9fa6136-9d80-4230-9986-22ba01eb542f
+        createdAt: '2020-04-21T15:30:30.322Z'
+        updatedAt: '2020-04-21T15:30:30.322Z'
+        authId: f0c36497-01db-4283-93b8-3c0a07964436
+        status: OPEN
+        currency: EUR
+        amount: 0
+        discountAmount: 0
+        taxAmount: 0
+        amountExTax: 0
+        expiresAt: '2020-04-22T15:30:30.264Z'
+        channel:
+          id: cf68586d-8019-4462-8bc6-d77378484e13
+        location:
+          id: 70d1a85e-90c2-4ea0-be3a-9a24294e15ab
+        items: []
+        payments: []
+        discounts: []
+        uniqueDocuments: []
+        pricingPropertiesAggregate: []
+        type: STANDARD
+    response-postCart-withItems:
+      summary: Maximum (Cart with items)
+      description: All newly created Cart data, including Items.
+      value:
+        id: 49482167-7e63-4b04-ac52-89371e78dd2d
+        createdAt: '2020-04-21T15:37:05.093Z'
+        updatedAt: '2020-04-21T15:37:05.093Z'
+        authId: f0c36497-01db-4283-93b8-3c0a07964436
+        status: OPEN
+        currency: EUR
+        amount: 4.39
+        discountAmount: 0
+        taxAmount: 0.42
+        amountExTax: 3.97
+        expiresAt: '2020-04-22T15:37:03.692Z'
+        channel:
+          id: cf68586d-8019-4462-8bc6-d77378484e13
+        location:
+          id: 70d1a85e-90c2-4ea0-be3a-9a24294e15ab
+        items:
+          - id: 6454b234-2a81-4a01-873a-31afc0e49556
+            quantity: 1
+            name: Hamburger
+            unit: ITEM
+            currency: EUR
+            basePrice: 4.39
+            price: 4.39
+            priceExTax: 3.97
+            amount: 4.39
+            discountAmount: 0
+            discountPercent: 0
+            taxAmount: 0.42
+            taxPercent: 9.5
+            amountExTax: 3.97
+            externalId: bb4b9331-c88e-4046-ba4b-24b0094593eb
+            pricingScheme: BASE_PRICING
+            priceSubType: '73'
+            taxes: []
+            discounts: []
+            canBeReimbursed: true
+            bundleSelection: []
+            pricingProperties: []
+            attributes:
+              - value: Bela
+                productAttribute:
+                  id: a069f36f-b0f8-4d49-9922-01d55f4fea21
+                  createdAt: '2018-09-17T15:37:05.093Z'
+                  updatedAt: '2018-09-17T15:37:05.093Z'
+                  name: Na daljinsko upravljanje
+                  key: NA_DALJINSKO_UPRAVLJANJE
+                  type: STRING
+                  externalId: 333df31b-6c12-4402-92c3-d737c6613ccc
+              - value: M
+                productAttribute:
+                  id: 3f52be83-965b-4df1-ae6d-95c46c77eb9b
+                  createdAt: '2018-09-17T15:37:05.093Z'
+                  updatedAt: '2018-09-17T15:37:05.093Z'
+                  name: Velikost
+                  key: VELIKOST
+                  type: STRING
+                  externalId: 5d3ec0ed-6b0a-4bf0-9333-2031b6159dfd
+              - value: Vsebuje
+                productAttribute:
+                  id: fd9de0bf-8ea3-49d4-ac4f-13f9b643ad3b
+                  createdAt: '2018-09-17T15:37:05.093Z'
+                  updatedAt: '2018-09-17T15:37:05.093Z'
+                  name: Gorčično seme 1
+                  key: ALERGEN
+                  type: STRING
+                  externalId: 0788d32e-678e-4e68-80c7-7537c4a704bf
+              - value: Vsebuje
+                productAttribute:
+                  id: 300a626f-a59c-4a01-a850-1baedba68d4f
+                  createdAt: '2018-09-17T15:37:05.093Z'
+                  updatedAt: '2018-09-17T15:37:05.093Z'
+                  name: Žita (gluten) - Pšenica
+                  key: ALERGEN
+                  type: STRING
+                  externalId: 79a56c04-bbeb-45f2-9c5c-3cd99d3c355e
+              - value: V sledeh
+                productAttribute:
+                  id: 594c37b1-0a7a-4349-94ae-06ca76e32237
+                  createdAt: '2018-09-17T15:37:05.093Z'
+                  updatedAt: '2018-09-17T15:37:05.093Z'
+                  name: Jajca
+                  key: ALERGEN
+                  type: STRING
+                  externalId: 2946222e-e391-4c44-8f35-2a60e4196950
+              - value: V sledeh
+                productAttribute:
+                  id: 4ad39344-b7e5-4914-aee8-bd5bee54e104
+                  createdAt: '2018-09-17T15:37:05.093Z'
+                  updatedAt: '2018-09-17T15:37:05.093Z'
+                  name: Soja
+                  key: ALERGEN
+                  type: STRING
+                  externalId: 1617cb49-7f2c-47ff-829a-d8c93704e883
+              - value: Vsebuje
+                productAttribute:
+                  id: 87259497-7e82-495c-b811-af289b0d74c7
+                  createdAt: '2018-09-17T15:37:05.093Z'
+                  updatedAt: '2018-09-17T15:37:05.093Z'
+                  name: Mleko
+                  key: ALERGEN
+                  type: STRING
+                  externalId: a32de19b-e75f-4611-8870-12912afb3ae6
+              - value: V sledeh
+                productAttribute:
+                  id: b83e2c1a-3bd8-4062-812c-bf0cda40e721
+                  createdAt: '2018-09-17T15:37:05.093Z'
+                  updatedAt: '2018-09-17T15:37:05.093Z'
+                  name: Sezam
+                  key: ALERGEN
+                  type: STRING
+                  externalId: 0cc6ab60-ee6d-4560-99c1-e167f980c305
+            modifiers:
+              - id: b10ff58e-5995-4a3c-86a6-29eca693aeae
+                createdAt: '2018-09-17T15:37:05.093Z'
+                updatedAt: '2018-09-17T15:37:05.093Z'
+                name: Sestavine
+                type: MULTIPLE_SELECTION
+                externalId: 6a5e348b-e997-4370-8836-39ec9a2dd447
+                values:
+                  - id: e03a3cb0-9f4e-42aa-8d22-fe24be63f556
+                    createdAt: '2018-09-17T15:37:05.093Z'
+                    updatedAt: '2018-09-17T15:37:05.093Z'
+                    name: Čebula
+                    externalId: 7bbbc62c-870e-48c2-8d25-cffbcd6be460
+                    default: true
+                  - id: 9ae95a43-0714-42ac-aeb5-0557643628ab
+                    createdAt: '2018-09-17T15:37:05.093Z'
+                    updatedAt: '2018-09-17T15:37:05.093Z'
+                    name: Gorčica
+                    externalId: 9906f8ac-bf38-416a-997d-3506096aa24a
+                    default: true
+              - id: 130c994d-7995-412c-be89-78b7b2444fc6
+                createdAt: '2018-09-17T15:37:05.093Z'
+                updatedAt: '2018-09-17T15:37:05.093Z'
+                name: Opcijski dodatki
+                type: SINGLE_SELECTION
+                externalId: 27711875-83f1-490a-af18-c3d0c4461343
+                values:
+                  - id: b443a1be-2a05-457c-abe4-916250df0aab
+                    createdAt: '2018-09-17T15:37:05.093Z'
+                    updatedAt: '2018-09-17T15:37:05.093Z'
+                    name: Paradižnik
+                    externalId: 7fb94023-f5c2-4309-aab4-60210428f775
+                    default: true
+            productVariation:
+              id: bb4b9331-c88e-4046-ba4b-24b0094593eb
+              productId: 21355e7f-2dd4-445d-b1c1-b85ed910db52
+              sku: '138534'
+              variationProductType: PHYSICAL
+              service:
+                id: aa8bf35a-5a41-484e-acc7-ea4e9826f033
+                pickupThreshold: 180
+              preparationTimeInSeconds: 300
+            documents: []
+            orderReadiness: READY
+            linkedItems: []
+            relatedItems: []
+            characteristics:
+              - id: 8a140d98-9d1f-4c0f-948d-91e9706a6bfb
+                createdAt: '2018-09-17T15:37:05.093Z'
+                updatedAt: '2018-09-17T15:37:05.093Z'
+                externalId: 96749137-3eeb-4ed0-b36c-929013385d2f
+                key: MAKSIMALNI_CAS_NAROCANJA
+                valueType: DECIMAL
+                externalValueId: a96215cc-30da-4ac6-9bff-293277427dc5
+                value: '97200'
+                validFrom: '1971-12-31T23:00:00Z'
+                validTo: '9999-12-30T23:00:00Z'
+              - id: d36db78d-1c39-4bb8-b00d-9a559a43a447
+                createdAt: '2018-09-17T15:37:05.093Z'
+                updatedAt: '2018-09-17T15:37:05.093Z'
+                externalId: 08d8f051-2503-462c-a1cc-8cc5a9053994
+                key: MINIMALNI_CAS_NAROCANJA
+                valueType: DECIMAL
+                externalValueId: cdec3b63-4d7d-4179-8212-3e62329ddcc1
+                value: '1800'
+                validFrom: '1971-12-31T23:00:00Z'
+                validTo: '9999-12-30T23:00:00Z'
+        payments: []
+        discounts: []
+        uniqueDocuments: []
+        pricingPropertiesAggregate: []
+        type: STANDARD
+    error-postCart-absentChannel:
+      summary: No Channel specified
+      description: 'In the request, no Channel was specified. 
+      
+      
+        __Course of action__: The request should be altered in order to contain a Channel.'
+      value:
+        ref: 28bd1489-c84a-437f-a827-afd3c8a9c191
+        status: 404
+        code: resource.not.found
+        message: Input validation failed.
+        moreInfo: No Channel specified.
+        errors:
+          - field: channel.id
+            code: validation.constraints.NotNull
+    error-postCart-invalidChannel:
+      summary: Invalid Channel specified
+      description: 'In the request, a Channel that does not exist was specified. 
+      
+      
+        __Course of action__: The request should be altered in order to contain an existing Channel.'
+      value:
+        ref: 28bd1489-c84a-437f-a827-afd3c8a9c191
+        status: 404
+        code: resource.not.found
+        message: Input validation failed.
+        moreInfo: Invalid Channel specified.
+        errors:
+          - field: channel.id
+            code: validation.constraints.Exists
+    error-postCart-absentLocation:
+      summary: No Location specified
+      description: 'In the request, no Location was specified. 
+      
+      
+        __Course of action__: The request
+        should be altered in order to contain a Location.'
+      value:
+        ref: 28bd1489-c84a-437f-a827-afd3c8a9c191
+        status: 404
+        code: resource.not.found
+        message: Input validation failed.
+        moreInfo: No Location specified.
+        errors:
+          - field: location.id
+            code: validation.constraints.NotNull
+    error-postCart-invalidLocation:
+      summary: Invalid Location specified
+      description: 'In the request, a Location that does not exist was specified. 
+      
+      
+        __Course of action__: The request should be altered in order to contain
+        an existing Location.'
+      value:
+        ref: 28bd1489-c84a-437f-a827-afd3c8a9c191
+        status: 404
+        code: resource.not.found
+        message: Input validation failed.
+        moreInfo: Invalid Location specified.
+        errors:
+          - field: location.id
+            code: validation.constraints.Exists
+    parameter-postCartItem-bySku:
+      summary: Minimum (Item by SKU)
+      description: Item, identified by stock keeping unit (SKU).
+      value:
+        quantity: 1
+        productVariation:
+          sku: 12345678
+          variationProductType: PHYSICAL
+    parameter-postCartItem-byId:
+      summary: Minimum (Item by ID)
+      description: Item, identified by unique identifier from Product catalog (ID).
+      value:
+        quantity: 1
+        productVariation:
+          id: f3cec99c-d886-4574-9384-af83a3b05282
+    parameter-postCartItem-maximum:
+      summary: Maximum
+      description: Item, containing also attributes.
+      value:
+        quantity: 1
+        productVariation:
+          sku: '87654321'
+          variationProductType: DIGITAL
+        attributes:
+          - productAttribute:
+              externalId: '12345'
+            key: NUM_PASSENGERS
+            value: '1'
+          - productAttribute:
+              externalId: '67890'
+            key: NUM_ADDITIONAL_LUGGAGE
+            value: '0'
+    error-postCartItem-itemNotInStock:
+      summary: Item not in stock
+      description: 'The item in the request to be added to Cart is __not in stock__. 
+      
+        
+        __Course of action__: The request should be altered in order to contain an Item, __which is in stock__, e.g.:
+        
+          * offer user to _change location_  
+          
+          * offer user select a _different item_  
+          
+          * etc.'
+      value:
+        ref: 28bd1489-c84a-437f-a827-afd3c8a9c191
+        status: 400
+        code: item.not.in.stock
+        message: Input validation failed.
+        moreInfo: The requested item is not in stock.
+    error-postCartItem-noValidPricing:
+      summary: No valid pricing
+      description: 'The item in the request to be added to Cart does __not have a valid pricing__.
+      
+        
+        __Course of action__: The request should be altered in order to contain an Item, __which is in stock__, e.g.:
+
+        * check and _fix pricing data_
+
+        * offer user to _change location_
+
+        * offer user to select a _different Item_
+
+        * etc.'
+
+      value:
+        ref: 28bd1489-c84a-437f-a827-afd3c8a9c191
+        status: 400
+        code: no.valid.pricings
+        message: Input validation failed.
+        moreInfo: The requested item does not have a valid pricing.
+    error-postCartItem-invalidProductVariation:
+      summary: Invalid Product Variation
+      description: 'The item in the request to be added to Cart does __not contain a valid Product Variation__.
+      
+        
+        __Course of action__: The request should be altered in order to contain an Item, __which contains a valid Product Variation__, e.g. 
+          
+          * check and _fix Product Catalog data_
+          
+          * check and _fix client_
+          
+          * offer user to select a _different Item_
+          
+          * etc.'
+      value:
+        ref: 28bd1489-c84a-437f-a827-afd3c8a9c191
+        status: 400
+        code: invalid.product.variation
+        message: Input validation failed.
+        moreInfo: The requested item does not contain a valid Product Variation.
+    error-any-optimisticLock:
+      summary: Optimistick lock
+      description: 'Another client modified exact same entity at the same time. The second __call failed to protect data integrity__. 
+      
+      
+        If code equals to `rollback.exception`, error should be treated as internal server error. 
+        
+        
+        __Course of action__: Try __again__ with delay.'
+      value:
+        ref: 28bd1489-c84a-437f-a827-afd3c8a9c191
+        status: 409
+        code: update.lock.exception
+        message: Database update failed.
+        moreInfo: Another client modified exact same entity at the same time.
+    error-removeCartItem-invalidItem:
+      summary: Invalid Item specified
+      description: 'In the request, an Item that does not exist was specified. 
+      
+      
+        __Course of action__: The request should be altered in order to contain
+        an existing Item.'
+      value:
+        ref: 28bd1489-c84a-437f-a827-afd3c8a9c191
+        status: 404
+        code: resource.not.found
+        message: Input validation failed.
+        moreInfo: Invalid Item specified.

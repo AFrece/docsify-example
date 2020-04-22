@@ -1,6 +1,7 @@
 <!-- docs/_sidebar.md -->
 
-* [Začni](sl/README.md)
+* [Uvod](sl/README.md)
+* [Začni](sl/getting-started.md)
 * [Vodič za razvijalce](sl/developer-guide.md)
-* <a href="redoc.html" target="_blank">Reference (ReDoc from Swagger.json)</a>
-* <a href="swagger.html" target="_blank">Reference (Swagger UI)</a>
+* <a href="redocOpenApi.html" target="_blank">Reference (ReDoc from openapi.yaml)</a>
+* <a href="swaggerOpenApi.html" target="_blank">Reference (Swagger UI from openapi.yaml)</a>
