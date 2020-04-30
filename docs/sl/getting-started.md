@@ -13,12 +13,16 @@ Tukaj je izvožena dokumentacija v PDF: <a href="readme.pdf">readme.pdf</a>.
 <br /> https://www.npmtrends.com/docsify-vs-vuepress-vs-redoc-vs-swagger-ui
 2. **apiDoc** - **dokumentiranje v kodi** za generiranje zanimive drevesne API dokumentacije **s prmerjavo verzij**:
 <br /> https://apidocjs.com/ + primer: https://apidocjs.com/example/
+  - Alternativa 1 za diff (Java objekt, HTML & MD renderer): https://github.com/quen2404/openapi-diff
+  - Alternativa 2 za diff (JSON z označenimi breaking changes): https://bitbucket.org/atlassian/openapi-diff/
 3. **API Builder** - **contract first** API dizajn, implementacija, dokumentiranje in generiranje klientov (npr. tudi Java in Swagger):
 <br /> https://app.apibuilder.io/doc/why + primer: https://app.apibuilder.io/apicollective/apibuilder-api/latest
 4. **widdershins** - generiranje **MD falov iz OpenAPI** (npr. za potrebe alternative Swagger UI v navezavi z npr. [Slate](https://github.com/slatedocs/slate)) s podporo **primerov kode klientov** v različnih jezikih:
 <br /> https://github.com/mermade/widdershins + [primer](https://camo.githubusercontent.com/6ca9fd1cc1da120cf33028722625c3941b43a03b/68747470733a2f2f6d65726d6164652e6769746875622e696f2f7769646465727368696e732f73637265656e73686f742e706e67)
 5. **Zelo obširen seznam OpenAPI orodij** (za v2 in v3 - vedno označeno, katere podpira):
 <br /> https://openapi.tools/
+6. **Še en obširen seznam OpenAPI orodij** (za v2 in v3 - v opisu navedeno, katere podpira):
+<br /> https://apis.guru/awesome-openapi3/category.html
 
 ## Zavihki
 
