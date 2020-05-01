@@ -21,8 +21,8 @@ Tukaj je izvožena dokumentacija v PDF: <a href="readme.pdf">readme.pdf</a>.
 <br /> https://github.com/mermade/widdershins + [primer](https://camo.githubusercontent.com/6ca9fd1cc1da120cf33028722625c3941b43a03b/68747470733a2f2f6d65726d6164652e6769746875622e696f2f7769646465727368696e732f73637265656e73686f742e706e67)
 5. **Zelo obširen seznam OpenAPI orodij** (za v2 in v3 - vedno označeno, katere podpira):
 <br /> https://openapi.tools/
-6. **Še en obširen seznam OpenAPI orodij** (za v2 in v3 - v opisu navedeno, katere podpira):
-<br /> https://apis.guru/awesome-openapi3/category.html
+6. **Še en obširen seznam OpenAPI orodij** (po kategorijah ali jezikih za v2 in v3 - v opisu navedeno, katere podpira):
+<br /> https://apis.guru/awesome-openapi3/
 
 ## Zavihki
 
