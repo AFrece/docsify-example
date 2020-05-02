@@ -23,6 +23,8 @@ Tukaj je izvožena dokumentacija v PDF: <a href="readme.pdf">readme.pdf</a>.
 <br /> https://openapi.tools/
 6. **Še en obširen seznam OpenAPI orodij** (po kategorijah ali jezikih za v2 in v3 - v opisu navedeno, katere podpira):
 <br /> https://apis.guru/awesome-openapi3/
+7. Orodje za izločanje (internih oz. drugih kategorijah) path-ov iz OpenAPI datoteke (`x-internal: true` ali custom razširitve):
+<br /> https://github.com/Mermade/openapi-filter
 
 ## Zavihki
 
