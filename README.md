@@ -82,4 +82,4 @@ with (or add) `/openapi` in `/vX/api/src/main/resources/config.yml`:
 11. Preview docs by:
 
 	* [installng](https://docsify.js.org/#/quickstart?id=quick-start) and [running](https://docsify.js.org/#/quickstart?id=preview-your-site) Docsify
-	* run service and access `http://localhost:8080`
+	* run service and access `http://localhost:8080/docs`
