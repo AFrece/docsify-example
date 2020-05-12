@@ -1,4 +1,4 @@
-1. Add `docs` dir into the `/vX/api/src/main/resources/webapp` dir.
+1. Add `docs` (not example, but e.g. from Cart) dir into the `/vX/api/src/main/resources/webapp` dir.
 
 2. Replace exposed `/swagger`:
 
