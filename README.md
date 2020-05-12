@@ -60,21 +60,26 @@ with (or add) `/openapi` in `/vX/api/src/main/resources/config.yml`:
 	* ```<maven.compiler.source>11</maven.compiler.source>```
 	* ```<maven.compiler.target>11</maven.compiler.target>```
 
-7. In `docs` dir modify service specific data in 
+7. In `docs` dir modify service specific data in:
 
-	* _coverpage.md
-	* index.html
-	* rapiDoc.html
-	* swaggerUi.html
+	* `_coverpage.md`
+	* `index.html`
+	* `rapiDoc.html`
+	* `swaggerUi.html`
 
 8. In `docs` dir write content of:
 
-	* changelog.md
-	* developer-guide.md
-	* examples.yaml
-	* getting-started.md
-	* README.md
+	* `changelog.md`
+	* `developer-guide.md`
+	* `examples.yaml`
+	* `getting-started.md`
+	* `README.md`
 
 9. Reuse `OpenApiSunesisConstants` class and make your own `OpenApiSunesisConfig` class when annotatiing `public class RestApplication extends Application`. 
 
 10. Annotate also all resources of the `RestApplication`.
+
+11. Preview docs by:
+
+	* [installng](https://docsify.js.org/#/quickstart?id=quick-start) and [running](https://docsify.js.org/#/quickstart?id=preview-your-site) Docsify
+	* run service and access `http://localhost:8080`
