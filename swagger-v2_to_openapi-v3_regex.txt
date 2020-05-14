@@ -1,0 +1,44 @@
+^(\s*)@ApiOperation\s*\(\s*nickname\s*=\s*"(.*)"\s*,\s*value\s*=\s*"(.*)"\s*,\s*tags\s*=\s*\{\s*"(.*)"\s*\}\s*,\s*notes\s*=\s*"(.*)"\)\s*$
+\1@Tag(name="\4")\n\1@Operation(operationId = "\2", summary = "\3", description = "\5")
+
+^(\s*)@ApiOperation\s*\(\s*value\s*=\s*"(.*)"\s*,\s*tags\s*=\s*\{\s*"(.*)"\s*\}\s*,\s*notes\s*=\s*"(.*)"\)\s*$
+\1@Tag(name="\3")\n\1@Operation(summary = "\2", description = "\4")
+
+^(\s*)@ApiResponses\s*\(\s*value\s*=\s*\{
+\1@APIResponses({
+
+^(\s*)@ApiResponse\s*\(\s*message\s*=\s*("?.*"?)\s*,\s*code\s*=\s*(\d*)\s*,\s*response\s*=\s*(.*)\s*,\s*responseContainer\s*=\s*"List"\s*\)\s*(,?)\s*$
+\1@APIResponse(description = \2, responseCode = "\3", content = @Content(schema = @Schema(implementation = \4, type= SchemaType.ARRAY)))\5
+
+^(\s*)@ApiResponse\s*\(\s*message\s*=\s*("?.*"?)\s*,\s*code\s*=\s*(\d*)\s*,\s*response\s*=\s*(.*)\s*\)\s*(,?)\s*$
+\1@APIResponse(description = \2, responseCode = "\3", content = @Content(schema = @Schema(implementation = \4)))\5
+
+^(\s*)@ApiImplicitParams\s*\(\s*\{
+\1@Parameters({
+
+^(\s*)@ApiImplicitParam\s*\(\s*name\s*=\s*"(.*)"\s*,\s*value\s*=\s*"(.*)"\s*,\s*dataType\s*=\s*"(.*)"\s*,\s*paramType\s*=\s*"(.*)"\s*\)\s*(,?)\s*$
+\1@Parameter\(name = "\2", description = "\3", schema = @Schema(type = SchemaType.\U\4\E), in = ParameterIn.\U\5\E)\6
+
+
+
+^(\s*)@ApiModelProperty\s*\(\s*value\s*=\s*"(.*)"\s*,\s*dataType\s*=\s*"java.util.Date"\s*\)\s*$
+\1@Schema(description = "\2", type = SchemaType.STRING, format = "date")
+
+^(\s*)@ApiModelProperty\s*\(\s*dataType\s*=\s*"java.util.Date"\s*\)\s*$
+\1@Schema(type = SchemaType.STRING, format = "date")
+
+^(\s*)@ApiModelProperty\s*\(\s*value\s*=
+\1@Schema(description =
+
+^(\s*)@ApiModel\s*\(\s*value\s*=
+\1@Schema(description =
+
+^(\s*)@ApiModel\(
+\1@Schema(
+
+import io.swagger.annotations.ApiModel;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
+import io.swagger.annotations.ApiModelProperty;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
