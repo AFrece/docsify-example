@@ -75,7 +75,7 @@ with (or add) `/openapi` in `/vX/api/src/main/resources/config.yml`:
 	* `getting-started.md`
 	* `README.md`
 
-9. Reuse `OpenApiSunesisConstants` class and make your own `OpenApiSunesisConfig` class when annotatiing `public class RestApplication extends Application`. 
+9. Reuse `OASConstants` (formerly known as `OpenApiSunesisConstants`) class and make your own `OpenApiSunesisConfig` class when annotatiing `public class RestApplication extends Application`. 
 
 10. Annotate also all resources of the `RestApplication`.
 
