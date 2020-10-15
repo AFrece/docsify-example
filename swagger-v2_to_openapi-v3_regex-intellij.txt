@@ -1,51 +1,51 @@
 ^([\s\n]*)@ApiOperation[\s\n]*\([\s\n]*nickname[\s\n]*=[\s\n]*"(.*)"[\s\n]*,[\s\n]*value[\s\n]*=[\s\n]*"(.*)"[\s\n]*,[\s\n]*tags[\s\n]*=[\s\n]*\{[\s\n]*"(.*)"[\s\n]*\}[\s\n]*,[\s\n]*notes[\s\n]*=[\s\n]*"(.*)"
-\1@Tag(name="\4")\n\1@Operation(operationId = "\2", summary = "\3", description = "\5"
+$1@Tag(name="$4")\n$1@Operation(operationId = "$2", summary = "$3", description = "$5"
 
 ,([\s\n]*)extensions[\s\n]*=[\s\n]*@Extension[\s\n]*\([\s\n]*properties[\s\n]*=[\s\n]*\{
-)\1@Extensions({
+)$1@Extensions({
 
 @ExtensionProperty[\s\n]*\([\s\n]*name
 @Extension(name
 
 (@Extensions\(\{\n([\s\n]*@Extension\(.*\)[\s\n]*,?)+\}\))[\s\n]*\)
-\1
+$1
 
 ^([\s\n]*)@ApiOperation[\s\n]*\([\s\n]*value[\s\n]*=[\s\n]*"(.*)"[\s\n]*,[\s\n]*tags[\s\n]*=[\s\n]*\{[\s\n]*"(.*)"[\s\n]*\}[\s\n]*,[\s\n]*notes[\s\n]*=[\s\n]*"(.*)"
-\1@Tag(name="\3")\n\1@Operation(summary = "\2", description = "\4"
+$1@Tag(name="$3")\n$1@Operation(summary = "$2", description = "$4"
 
 ^([\s\n]*)@ApiResponses[\s\n]*\([\s\n]*value[\s\n]*=[\s\n]*\{
-\1@APIResponses({
+$1@APIResponses({
 
 ([\s\n]*)@ApiResponse[\s\n]*\([\s\n]*message[\s\n]*=[\s\n]*("?.*"?)[\s\n]*,[\s\n]*code[\s\n]*=[\s\n]*(\d*)[\s\n]*,[\s\n]*response[\s\n]*=[\s\n]*(.*)[\s\n]*,[\s\n]*responseContainer[\s\n]*=[\s\n]*"List"[\s\n]*\)[\s\n]*(,?)[\s\n]*
-\1@APIResponse(description = \2, responseCode = "\3", content = @Content(schema = @Schema(implementation = \4, type= SchemaType.ARRAY)))\5
+$1@APIResponse(description = $2, responseCode = "$3", content = @Content(schema = @Schema(implementation = $4, type= SchemaType.ARRAY)))$5
 
 ([\s\n]*)@ApiResponse[\s\n]*\([\s\n]*message[\s\n]*=[\s\n]*("?.*"?)[\s\n]*,[\s\n]*code[\s\n]*=[\s\n]*(\d*)[\s\n]*,[\s\n]*response[\s\n]*=[\s\n]*(.*)[\s\n]*\)[\s\n]*(,?)[\s\n]*
-\1@APIResponse(description = \2, responseCode = "\3", content = @Content(schema = @Schema(implementation = \4)))\5
+$1@APIResponse(description = $2, responseCode = "$3", content = @Content(schema = @Schema(implementation = $4)))$5
 
 ([\s\n]*)@ApiResponse[\s\n]*\([\s\n]*message[\s\n]*=[\s\n]*("?.*"?)[\s\n]*,[\s\n]*code[\s\n]*=[\s\n]*(\d*)[\s\n]*\)[\s\n]*(,?)[\s\n]*
-\1@APIResponse(description = \2, responseCode = "\3")\5
+$1@APIResponse(description = $2, responseCode = "$3")$5
 
 ^([\s\n]*)@ApiImplicitParams[\s\n]*\([\s\n]*\{
-\1@Parameters({
+$1@Parameters({
 
 ^([\s\n]*)@ApiImplicitParam[\s\n]*\([\s\n]*name[\s\n]*=[\s\n]*"(.*)"[\s\n]*,[\s\n]*value[\s\n]*=[\s\n]*"(.*)"[\s\n]*,[\s\n]*dataType[\s\n]*=[\s\n]*"(.*)"[\s\n]*,[\s\n]*paramType[\s\n]*=[\s\n]*"(.*)"[\s\n]*,[\s\n]*required[\s\n]*=[\s\n]*(.*)[\s\n]*\)[\s\n]*(,?)[\s\n]*$
-\1@Parameter\(name = "\2", description = "\3", schema = @Schema(type = SchemaType.\U\4\E), in = ParameterIn.\U\5\E, required = \6)\7
+$1@Parameter\(name = "$2", description = "$3", schema = @Schema(type = SchemaType.\U$4\E), in = ParameterIn.\U$5\E, required = $6)$7
 
 ^([\s\n]*)@ApiImplicitParam[\s\n]*\([\s\n]*name[\s\n]*=[\s\n]*"(.*)"[\s\n]*,[\s\n]*value[\s\n]*=[\s\n]*"(.*)"[\s\n]*,[\s\n]*dataType[\s\n]*=[\s\n]*"(.*)"[\s\n]*,[\s\n]*paramType[\s\n]*=[\s\n]*"(.*)"[\s\n]*\)[\s\n]*(,?)[\s\n]*$
-\1@Parameter\(name = "\2", description = "\3", schema = @Schema(type = SchemaType.\U\4\E), in = ParameterIn.\U\5\E)\6
+$1@Parameter\(name = "$2", description = "$3", schema = @Schema(type = SchemaType.\U$4\E), in = ParameterIn.\U$5\E)$6
 
 ([\s\n]*)@ApiParam[\s\n]*\([\s\n]*name[\s\n]*=[\s\n]*"(.*)"[\s\n]*,[\s\n]*required[\s\n]*=[\s\n]*(.*)[\s\n]*\)[\s\n]*(,?)[\s\n]*
-\1@Parameter\(name = "\2", required = \3)\4
+$1@Parameter\(name = "$2", required = $3)$4
 
 ([\s\n]*)@ApiParam[\s\n]*\([\s\n]*value[\s\n]*=[\s\n]*"(.*)"[\s\n]*\)[\s\n]*(,?)[\s\n]*
-\1@Parameter\(description = "\2")\3
+$1@Parameter\(description = "$2")$3
 
 ([\s\n]*)@ApiParam[\s\n]*\([\s\n]*required[\s\n]*=[\s\n]*(.*)[\s\n]*\)[\s\n]*(,?)[\s\n]*
-\1@Parameter\(required = \2)\3
+$1@Parameter\(required = $2)$3
 
 
 ^([\s\n]*@Extension)[\s\n]*(\([\s\n]*properties[\s\n]*=[\s\n]*\{)$
-\1s\2
+$1s$2
 
 import io\.swagger\.annotations\.Extension;
 import org.eclipse.microprofile.openapi.annotations.extensions.Extensions;
@@ -54,19 +54,19 @@ import io\.swagger\.annotations\.ExtensionProperty;
 import org.eclipse.microprofile.openapi.annotations.extensions.Extension;
 
 ^([\s\n]*)@ApiModelProperty[\s\n]*\([\s\n]*value[\s\n]*=[\s\n]*"(.*)"[\s\n]*,[\s\n]*dataType[\s\n]*=[\s\n]*"java.util.Date"[\s\n]*\)[\s\n]*$
-\1@Schema(description = "\2", type = SchemaType.STRING, format = "date")
+$1@Schema(description = "$2", type = SchemaType.STRING, format = "date")
 
 ^([\s\n]*)@ApiModelProperty[\s\n]*\([\s\n]*dataType[\s\n]*=[\s\n]*"java.util.Date"[\s\n]*\)[\s\n]*$
-\1@Schema(type = SchemaType.STRING, format = "date")
+$1@Schema(type = SchemaType.STRING, format = "date")
 
 ^([\s\n]*)@ApiModelProperty[\s\n]*\([\s\n]*value[\s\n]*=
-\1@Schema(description =
+$1@Schema(description =
 
 ^([\s\n]*)@ApiModel[\s\n]*\([\s\n]*value[\s\n]*=
-\1@Schema(description =
+$1@Schema(description =
 
 ^([\s\n]*)@ApiModel\(
-\1@Schema(
+$1@Schema(
 
 import io.swagger.annotations.ApiModel;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;

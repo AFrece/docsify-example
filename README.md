@@ -77,7 +77,7 @@ with (or add) `/openapi` in `/vX/api/src/main/resources/config.yml`:
 
 9. Reuse `OASConstants` (formerly known as `OpenApiSunesisConstants`) class from [sunesis-openapi-mp-common](https://git.sunesis.si/digital/sunesis-openapi-mp-common) and make your own `OpenApiSunesisConfig` class when annotatiing `public class RestApplication extends Application`. 
 
-10. Annotate also all resources of the `RestApplication`. When migrating Swagger v2 annotations to OpenAPI v3 (MicroProfile) annotations you can use [these regular expressions](swagger-v2_to_openapi-v3_regex.txt).
+10. Annotate also all resources of the `RestApplication`. When migrating Swagger v2 annotations to OpenAPI v3 (MicroProfile) annotations you can use [these regular expressions](swagger-v2_to_openapi-v3_regex.txt) or [variation for the Intellij IDEA](swagger-v2_to_openapi-v3_regex-intellij.txt).
 
 11. Preview docs by:
 
